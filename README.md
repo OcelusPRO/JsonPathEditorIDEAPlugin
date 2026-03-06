@@ -2,8 +2,8 @@
   <h1>🚀 JsonPath Live Editor</h1>
   <p><b>Master your JSON structures with real-time evaluation and smart context actions.</b></p>
 
-  <a href="https://plugins.jetbrains.com/plugin/ton-id-ici">
-    <img src="https://img.shields.io/badge/JetBrains%20Marketplace-v1.0-blue?style=for-the-badge&logo=jetbrains" alt="Marketplace">
+  <a href="https://plugins.jetbrains.com/plugin/30507-jsonpatheditor">
+    <img src="https://img.shields.io/badge/JetBrains%20Marketplace-v2026.1.0-blue?style=for-the-badge&logo=jetbrains" alt="Marketplace">
   </a>
   <img src="https://img.shields.io/badge/License-Freemium-orange?style=for-the-badge" alt="License">
 </div>
