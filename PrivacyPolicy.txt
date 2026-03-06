@@ -1,0 +1,6 @@
+JsonPathEditor - Privacy Policy
+
+1. Data Collection: The JsonPathEditor plugin does not collect, store, or transmit any personal data or code from your projects. All JSON processing and evaluations are performed locally on your machine.
+2. Licensing: Licensing is handled exclusively through the JetBrains Marketplace. We do not have access to your payment information.
+3. Third-party services: No third-party tracking or analytics services are integrated into the plugin.
+4. Contact: For any questions, contact us at https://ftnl.fr.

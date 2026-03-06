@@ -3,7 +3,7 @@
 
 	<product-descriptor code="PJSONPATH"
 						release-date="20260306"
-						release-version="1"
+						release-version="2026"
 						optional="true"/>
 
 	<id>fr.ftnl.JsonPathEditor</id>
@@ -45,8 +45,8 @@
         </tr>
         <tr>
             <td><b>Instant Path Generation</b></td>
-            <td>✅</td>
-            <td>✅</td>
+            <td>❌</td>
+            <td><b>✅</b></td>
         </tr>
     </table>
 
@@ -75,7 +75,7 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<toolWindow id="fr.ftnl.jsonpatheditor.JsonPathEditor"
+		<toolWindow id="JsonPathEditor"
 					anchor="right"
 					factoryClass="fr.ftnl.jsonpatheditor.JsonPathToolWindowFactory"
 					icon="AllIcons.FileTypes.Json"/>

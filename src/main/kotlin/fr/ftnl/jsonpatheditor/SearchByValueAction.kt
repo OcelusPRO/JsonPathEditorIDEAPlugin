@@ -4,14 +4,13 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.ui.LicensingFacade
 import fr.ftnl.jsonpatheditor.internal.ActionLogic
 import fr.ftnl.jsonpatheditor.internal.isPremiumActive
 
 class SearchByValueAction : AnAction() {
     
     // Identifiant de la ToolWindow (on peut le cacher un peu ici aussi)
-    private val TW_ID = "fr.ftnl.jsonpatheditor.JsonPathEditor"
+    private val TW_ID = "JsonPathEditor"
     
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
     
