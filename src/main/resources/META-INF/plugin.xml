@@ -1,0 +1,84 @@
+<!-- Plugin Configuration File: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+
+	<product-descriptor code="PJSONPATH"
+						release-date="20260306"
+						release-version="1"
+						optional="true"/>
+
+	<id>fr.ftnl.JsonPathEditor</id>
+	<name>JsonPathEditor</name>
+	<vendor url="https://ftnl.fr">FTNL</vendor>
+	<description><![CDATA[
+    <h1>JsonPath Live Editor</h1>
+    <p><b>The ultimate real-time JSONPath playground for developers.</b></p>
+
+    <h3>🚀 Core Features:</h3>
+    <ul>
+        <li><b>Live Evaluation:</b> Results update instantly as you type in the dedicated tool window.</li>
+        <li><b>Smart Auto-Quotes:</b> Automatically handles JSON syntax for you.</li>
+        <li><b>Intelligent Formatting:</b> Preserves your file's indentation during live edits.</li>
+        <li><b>Universal Compatibility:</b> Supports .json, .jsonc, and .json5 files.</li>
+    </ul>
+
+    <h3>💎 Freemium Benefits:</h3>
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>Free</th>
+            <th>PRO</th>
+        </tr>
+        <tr>
+            <td>Interactive Tool Window</td>
+            <td>✅</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>Manual Search</td>
+            <td>✅</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td><b>Right-Click Context Action</b></td>
+            <td>❌</td>
+            <td><b>✅</b></td>
+        </tr>
+        <tr>
+            <td><b>Instant Path Generation</b></td>
+            <td>✅</td>
+            <td>✅</td>
+        </tr>
+    </table>
+
+    <p><i>The Pro version offers the <b>Search by Value</b> context menu, allowing you to generate complex paths in a single click, saving you minutes of manual typing every day.</i></p>
+
+    <h3>📖 How to use:</h3>
+    <ol>
+        <li>Open a JSON file.</li>
+        <li>Open the <b>JsonPath Editor</b> tool window on the right.</li>
+        <li>Start typing your query (e.g., <code>$.store.book[*].author</code>).</li>
+    </ol>
+]]></description>
+
+	<depends>com.intellij.modules.platform</depends>
+	<depends>com.intellij.modules.json</depends>
+	<depends>com.intellij.jsonpath</depends>
+	<depends>com.intellij.modules.lang</depends>
+
+	<actions>
+		<action id="fr.ftnl.jsonpatheditor.SearchByValueAction"
+					 class="fr.ftnl.jsonpatheditor.SearchByValueAction"
+					 text="Find This Value with JSONPath"
+					 description="Recherche tous les chemins ayant cette valeur">
+			<add-to-group group-id="EditorPopupMenu" anchor="first"/>
+		</action>
+	</actions>
+
+	<extensions defaultExtensionNs="com.intellij">
+		<toolWindow id="fr.ftnl.jsonpatheditor.JsonPathEditor"
+					anchor="right"
+					factoryClass="fr.ftnl.jsonpatheditor.JsonPathToolWindowFactory"
+					icon="AllIcons.FileTypes.Json"/>
+	</extensions>
+
+</idea-plugin>
