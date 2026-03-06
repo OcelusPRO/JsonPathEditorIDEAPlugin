@@ -3,7 +3,7 @@
 
 	<product-descriptor code="PJSONPATH"
 						release-date="20260306"
-						release-version="2026"
+						release-version="20261"
 						optional="true"/>
 
 	<id>fr.ftnl.JsonPathEditor</id>
