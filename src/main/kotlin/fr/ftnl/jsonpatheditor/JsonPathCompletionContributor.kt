@@ -3,15 +3,20 @@ package fr.ftnl.jsonpatheditor
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
+import com.intellij.ide.BrowserUtil
 import com.intellij.json.psi.JsonArray
 import com.intellij.json.psi.JsonElement
 import com.intellij.json.psi.JsonFile
 import com.intellij.json.psi.JsonObject
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiManager
 import com.intellij.util.ProcessingContext
 import fr.ftnl.jsonpatheditor.internal.JsonPathLogic
+import fr.ftnl.jsonpatheditor.internal.isPremiumActive
+
 
 class JsonPathCompletionContributor : CompletionContributor() {
     
@@ -25,6 +30,29 @@ class JsonPathCompletionContributor : CompletionContributor() {
                     context: ProcessingContext,
                     result: CompletionResultSet
                 ) {
+                    
+                    if (!isPremiumActive()) {
+                        if (parameters.isAutoPopup) return
+                        val r = result.withPrefixMatcher("")
+                        r.addElement(
+                            LookupElementBuilder.create("🌟 Débloquez l'auto-complétion (PRO)")
+                                .withIcon(AllIcons.General.InspectionsError)
+                                .withTypeText("Premium")
+                                .withInsertHandler { ctx, _ ->
+                                    ctx.document.deleteString(ctx.startOffset, ctx.tailOffset)
+                                    ApplicationManager.getApplication().invokeLater {
+                                        val actionManager = ActionManager.getInstance()
+                                        val registerAction = actionManager.getAction("Register")
+                                        if (registerAction != null)
+                                            actionManager.tryToExecute(registerAction, null, null, null, true)
+                                        else
+                                            BrowserUtil.browse("https://plugins.jetbrains.com/plugin/30507-jsonpatheditor")
+                                    }
+                                }
+                        )
+                        return
+                    }
+                    
                     val project = parameters.position.project
                     val editorManager = FileEditorManager.getInstance(project)
                     
@@ -39,11 +67,6 @@ class JsonPathCompletionContributor : CompletionContributor() {
                     
                     val toolWindowEditor = parameters.editor
                     val text = toolWindowEditor.document.getText(com.intellij.openapi.util.TextRange(0, parameters.offset))
-                    
-                    // ==========================================
-                    // 1. NOUVEAU : DÉTECTION DES OPÉRATEURS
-                    // ==========================================
-                    // Si on est dans un filtre, après une propriété et un espace, on propose les opérateurs
                     val operatorRegex = """(?s).*\[\?\([^)]*(?:@\.[a-zA-Z0-9_-]+|@\['[^']+'\]|@\["[^"]+"\]|@)\s+([a-zA-Z!<=>~]*)$""".toRegex()
                     val operatorMatch = operatorRegex.find(text)
                     
@@ -51,7 +74,6 @@ class JsonPathCompletionContributor : CompletionContributor() {
                         val prefix = operatorMatch.groupValues[1]
                         val r = result.withPrefixMatcher(prefix)
                         
-                        // Liste officielle des opérateurs supportés par Jayway
                         val operators = listOf(
                             "==", "!=", "<", "<=", ">", ">=", "=~",
                             "in", "nin", "subsetof", "anyof", "noneof", "size", "empty", "contains"
@@ -60,17 +82,14 @@ class JsonPathCompletionContributor : CompletionContributor() {
                         operators.forEach { op ->
                             r.addElement(
                                 LookupElementBuilder.create(op)
-                                    .withIcon(AllIcons.Nodes.Function) // Icône distincte (fonction/opération)
+                                    .withIcon(AllIcons.Nodes.Function)
                                     .withTypeText("Operator")
-                                    .withBoldness(true) // En gras pour bien les repérer
+                                    .withBoldness(true)
                             )
                         }
-                        return // On s'arrête là, pas besoin de chercher des clés JSON !
+                        return
                     }
                     
-                    // ==========================================
-                    // 2. DÉCOUPAGE MAGIQUE (Clés et Deep Scan)
-                    // ==========================================
                     val regex = """(?s)^(.*?)(\.\.|\.|\[\s*['"]|@\.)([a-zA-Z0-9_-]*)$""".toRegex()
                     val match = regex.find(text)
                     

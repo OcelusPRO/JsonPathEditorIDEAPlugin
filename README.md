@@ -3,7 +3,7 @@
   <p><b>Master your JSON structures with real-time evaluation and smart context actions.</b></p>
 
   <a href="https://plugins.jetbrains.com/plugin/30507-jsonpatheditor">
-    <img src="https://img.shields.io/badge/JetBrains%20Marketplace-v2026.1.0-blue?style=for-the-badge&logo=jetbrains" alt="Marketplace">
+    <img src="https://img.shields.io/badge/JetBrains%20Marketplace-v2026.1.1-blue?style=for-the-badge&logo=jetbrains" alt="Marketplace">
   </a>
   <img src="https://img.shields.io/badge/License-Freemium-orange?style=for-the-badge" alt="License">
 </div>
@@ -14,8 +14,6 @@
 
 **JsonPath Live Editor** is a lightweight yet powerful IntelliJ IDEA plugin designed to simplify how developers interact with complex JSON files. Instead of guessing your JSONPath expressions, test them live on your actual data.
 
-
-
 ---
 
 ## ✨ Key Features
@@ -25,6 +23,7 @@
     <li><b>Contextual Accuracy:</b> Works directly with your active editor's content.</li>
     <li><b>Smart Formatting:</b> Automatically handles quotes and maintains your file's indentation.</li>
     <li><b>Multi-format Support:</b> Full support for <code>.json</code>, <code>.jsonc</code>, and <code>.json5</code>.</li>
+    <li><b>Intelligent Auto-Completion (PRO):</b> Context-aware suggestions for JSON keys, wildcards, and JSONPath operators as you type.</li>
 </ul>
 
 ---
@@ -58,6 +57,11 @@ We offer a powerful free tool for manual testing, while the **PRO version** is b
       <td align="center">✅</td>
     </tr>
     <tr>
+      <td><b>Smart Auto-Completion</b></td>
+      <td align="center">❌</td>
+      <td align="center">✅</td>
+    </tr>
+    <tr>
       <td><b>Context Menu: "Find This Value"</b></td>
       <td align="center">❌</td>
       <td align="center">✅</td>
@@ -71,10 +75,8 @@ We offer a powerful free tool for manual testing, while the **PRO version** is b
 </table>
 
 <p align="center">
-  <i>The PRO version enables the "Search by Value" right-click action, which generates the correct JSONPath for any value instantly.</i>
+  <i>The PRO version enables the "Search by Value" right-click action and Intelligent Auto-Completion, saving you minutes of manual typing every day.</i>
 </p>
-
-
 
 ---
 
@@ -94,8 +96,9 @@ We offer a powerful free tool for manual testing, while the **PRO version** is b
 ### 1. Manual Search (Free)
 Open the **JsonPath Editor** Tool Window (usually on the right bar). Start typing your query like `$.store.book[*].author` and see the results update in real-time.
 
-### 2. Magic Search (PRO)
-Right-click on any **value** in your JSON file and select **"Find This Value with JSONPath"**. The tool window will automatically open with the generated path and show all occurrences.
+### 2. Magic Search & Auto-Completion (PRO)
+- **Auto-Completion:** Just type `$.` in the tool window and use `Ctrl + Space` to get instant, context-aware suggestions for your JSON properties and JSONPath operators.
+- **Find by Value:** Right-click on any **value** in your JSON file and select **"Find This Value with JSONPath"**. The tool window will automatically open with the generated path.
 
 ---
 
@@ -112,5 +115,5 @@ We value your privacy. This plugin:
 
 <div align="center">
   <p>Developed with ❤️ by <b>FTNL</b></p>
-  <a href="https://ftnl.fr">Website</a> • <a href="https://plugins.jetbrains.com/">Marketplace Page</a>
+  <a href="https://ftnl.fr">Website</a> • <a href="https://plugins.jetbrains.com/plugin/30507-jsonpatheditor">Marketplace Page</a>
 </div>

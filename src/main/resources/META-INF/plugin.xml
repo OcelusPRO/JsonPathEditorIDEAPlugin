@@ -1,4 +1,3 @@
-<!-- Plugin Configuration File: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
 
 	<product-descriptor code="PJSONPATH"
@@ -19,6 +18,7 @@
         <li><b>Smart Auto-Quotes:</b> Automatically handles JSON syntax for you.</li>
         <li><b>Intelligent Formatting:</b> Preserves your file's indentation during live edits.</li>
         <li><b>Universal Compatibility:</b> Supports .json, .jsonc, and .json5 files.</li>
+        <li><b>Intelligent Auto-Completion (PRO):</b> Context-aware suggestions for JSON keys, wildcards, and operators.</li>
     </ul>
 
     <h3>💎 Freemium Benefits:</h3>
@@ -39,6 +39,11 @@
             <td>✅</td>
         </tr>
         <tr>
+            <td><b>Smart Auto-Completion</b></td>
+            <td>❌</td>
+            <td><b>✅</b></td>
+        </tr>
+        <tr>
             <td><b>Right-Click Context Action</b></td>
             <td>❌</td>
             <td><b>✅</b></td>
@@ -50,13 +55,14 @@
         </tr>
     </table>
 
-    <p><i>The Pro version offers the <b>Search by Value</b> context menu, allowing you to generate complex paths in a single click, saving you minutes of manual typing every day.</i></p>
+    <p><i>The Pro version unlocks <b>Intelligent Auto-Completion</b> and the <b>Search by Value</b> context menu, allowing you to generate complex paths in a single click, saving you minutes of manual typing every day.</i></p>
 
     <h3>📖 How to use:</h3>
     <ol>
         <li>Open a JSON file.</li>
         <li>Open the <b>JsonPath Editor</b> tool window on the right.</li>
         <li>Start typing your query (e.g., <code>$.store.book[*].author</code>).</li>
+        <li>Press <code>Ctrl + Space</code> to trigger smart auto-completion.</li>
     </ol>
 ]]></description>
 
@@ -68,7 +74,7 @@
 	<actions>
 		<action id="fr.ftnl.jsonpatheditor.SearchByValueAction"
 				class="fr.ftnl.jsonpatheditor.SearchByValueAction"
-				text="Find This Value with JSONPath (PRO)"
+				text="Find This Value with JSONPath"
 				description="Recherche tous les chemins ayant cette valeur">
 			<add-to-group group-id="EditorPopupMenu" anchor="first"/>
 		</action>
@@ -84,6 +90,5 @@
 				implementationClass="fr.ftnl.jsonpatheditor.JsonPathCompletionContributor"
 				order="first"/>
 	</extensions>
-
 
 </idea-plugin>
