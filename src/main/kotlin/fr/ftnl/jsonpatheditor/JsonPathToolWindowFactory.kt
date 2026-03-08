@@ -18,7 +18,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.JBFont
 import fr.ftnl.jsonpatheditor.internal.JsonPathLogic
-import fr.ftnl.jsonpatheditor.internal.isPremiumActive
 import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.event.FocusAdapter

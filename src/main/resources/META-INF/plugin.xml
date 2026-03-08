@@ -67,9 +67,9 @@
 
 	<actions>
 		<action id="fr.ftnl.jsonpatheditor.SearchByValueAction"
-					 class="fr.ftnl.jsonpatheditor.SearchByValueAction"
-					 text="Find This Value with JSONPath"
-					 description="Recherche tous les chemins ayant cette valeur">
+				class="fr.ftnl.jsonpatheditor.SearchByValueAction"
+				text="Find This Value with JSONPath (PRO)"
+				description="Recherche tous les chemins ayant cette valeur">
 			<add-to-group group-id="EditorPopupMenu" anchor="first"/>
 		</action>
 	</actions>
@@ -79,6 +79,11 @@
 					anchor="right"
 					factoryClass="fr.ftnl.jsonpatheditor.JsonPathToolWindowFactory"
 					icon="AllIcons.FileTypes.Json"/>
+		<completion.contributor
+				language="any"
+				implementationClass="fr.ftnl.jsonpatheditor.JsonPathCompletionContributor"
+				order="first"/>
 	</extensions>
+
 
 </idea-plugin>
