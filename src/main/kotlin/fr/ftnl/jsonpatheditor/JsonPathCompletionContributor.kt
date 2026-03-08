@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.json.psi.JsonArray
+import com.intellij.json.psi.JsonElement
 import com.intellij.json.psi.JsonFile
 import com.intellij.json.psi.JsonObject
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -39,101 +40,118 @@ class JsonPathCompletionContributor : CompletionContributor() {
                     val toolWindowEditor = parameters.editor
                     val text = toolWindowEditor.document.getText(com.intellij.openapi.util.TextRange(0, parameters.offset))
                     
-                    // 1. Isoler le préfixe tapé après le dernier point
-                    val lastDotIndex = text.lastIndexOf('.')
-                    if (lastDotIndex == -1) {
+                    // ==========================================
+                    // 1. NOUVEAU : DÉTECTION DES OPÉRATEURS
+                    // ==========================================
+                    // Si on est dans un filtre, après une propriété et un espace, on propose les opérateurs
+                    val operatorRegex = """(?s).*\[\?\([^)]*(?:@\.[a-zA-Z0-9_-]+|@\['[^']+'\]|@\["[^"]+"\]|@)\s+([a-zA-Z!<=>~]*)$""".toRegex()
+                    val operatorMatch = operatorRegex.find(text)
+                    
+                    if (operatorMatch != null) {
+                        val prefix = operatorMatch.groupValues[1]
+                        val r = result.withPrefixMatcher(prefix)
+                        
+                        // Liste officielle des opérateurs supportés par Jayway
+                        val operators = listOf(
+                            "==", "!=", "<", "<=", ">", ">=", "=~",
+                            "in", "nin", "subsetof", "anyof", "noneof", "size", "empty", "contains"
+                        )
+                        
+                        operators.forEach { op ->
+                            r.addElement(
+                                LookupElementBuilder.create(op)
+                                    .withIcon(AllIcons.Nodes.Function) // Icône distincte (fonction/opération)
+                                    .withTypeText("Operator")
+                                    .withBoldness(true) // En gras pour bien les repérer
+                            )
+                        }
+                        return // On s'arrête là, pas besoin de chercher des clés JSON !
+                    }
+                    
+                    // ==========================================
+                    // 2. DÉCOUPAGE MAGIQUE (Clés et Deep Scan)
+                    // ==========================================
+                    val regex = """(?s)^(.*?)(\.\.|\.|\[\s*['"]|@\.)([a-zA-Z0-9_-]*)$""".toRegex()
+                    val match = regex.find(text)
+                    
+                    if (match == null) {
                         if (text == "$") {
-                            // On désactive le filtre pour le premier caractère
                             val r = result.withPrefixMatcher("")
-                            suggestKeysFromRoot(jsonFile, r)
+                            jsonFile.topLevelValue?.let { root ->
+                                val suggestedKeys = mutableSetOf<String>()
+                                extractKeys(root, r, suggestedKeys, deepScan = false)
+                            }
                         }
                         return
                     }
                     
-                    val prefix = text.substring(lastDotIndex + 1)
-                    val rawPath = text.substring(0, lastDotIndex)
-                    
-                    // 2. CORRECTION : On redonne à IntelliJ le vrai préfixe pour qu'il filtre les résultats
+                    val rawBasePath = match.groupValues[1]
+                    val separator = match.groupValues[2]
+                    val prefix = match.groupValues[3]
                     val r = result.withPrefixMatcher(prefix)
                     
-                    // 3. Réparation du JsonPath (Filtres non fermés)
-                    val lastOpenBracket = rawPath.lastIndexOf("[?(")
-                    val lastCloseBracket = rawPath.lastIndexOf("]")
+                    var evaluablePath = ""
+                    var deepScan = false
                     
-                    val evaluablePath: String = if (lastOpenBracket > lastCloseBracket) {
-                        // On est DANS un filtre [?( ... )] qui n'est pas encore fermé
-                        val basePath = rawPath.substring(0, lastOpenBracket)
-                        val lastAtIndex = rawPath.lastIndexOf('@')
-                        
-                        // On récupère ce qu'il y a après le @ (ex: ".books.*")
-                        val relativePath = if (lastAtIndex != -1 && lastAtIndex < rawPath.length) {
-                            rawPath.substring(lastAtIndex + 1)
-                        } else {
-                            ""
-                        }
-                        // On fusionne avec [*] pour évaluer le chemin parent
-                        "$basePath[*]$relativePath"
+                    if (separator == "@.") {
+                        val filterStart = rawBasePath.lastIndexOf("[?(")
+                        evaluablePath = if (filterStart >= 0) {
+                            rawBasePath.substring(0, filterStart) + "[*]"
+                        } else "$"
+                    } else if (separator == "..") {
+                        evaluablePath = rawBasePath.ifEmpty { "$" }
+                        deepScan = true
                     } else {
-                        // Chemin normal
-                        if (rawPath.isEmpty()) "$" else rawPath
+                        evaluablePath = rawBasePath.ifEmpty { "$" }
                     }
                     
-                    // 4. Évaluation et suggestions
                     try {
                         val paths = JsonPathLogic.getPaths(documentText, evaluablePath)
                         val suggestedKeys = mutableSetOf<String>()
                         
-                        // AJOUT : Proposer l'étoile * si on a des résultats
-                        if (paths.isNotEmpty() && suggestedKeys.add("*")) {
+                        for (path in paths) {
+                            val element = JsonPathLogic.findPsiElement(jsonFile, path)
+                            if (element != null) {
+                                extractKeys(element, r, suggestedKeys, deepScan)
+                            }
+                        }
+                        
+                        if (!deepScan && suggestedKeys.isNotEmpty() && suggestedKeys.add("*")) {
                             r.addElement(
                                 LookupElementBuilder.create("*")
-                                    .withIcon(AllIcons.Nodes.Tag) // Icône bleue différente
+                                    .withIcon(AllIcons.Nodes.Parameter)
                                     .withTypeText("Wildcard")
                             )
                         }
-                        
-                        for (path in paths) {
-                            val element = JsonPathLogic.findPsiElement(jsonFile, path)
-                            
-                            // Si on tombe sur un tableau, on propose les clés des objets à l'intérieur
-                            if (element is JsonArray) {
-                                element.valueList.forEach { item ->
-                                    if (item is JsonObject) {
-                                        item.propertyList.forEach { prop ->
-                                            if (suggestedKeys.add(prop.name)) {
-                                                r.addElement(createLookupElement(prop.name))
-                                            }
-                                        }
-                                    }
-                                }
-                            } else if (element is JsonObject) {
-                                element.propertyList.forEach { prop ->
-                                    if (suggestedKeys.add(prop.name)) {
-                                        r.addElement(createLookupElement(prop.name))
-                                    }
-                                }
-                            }
-                        }
                     } catch (e: Exception) {
-                        // Ignorer les erreurs d'évaluation silencieusement
+                        // Ignore
                     }
                 }
             }
         )
     }
     
-    private fun suggestKeysFromRoot(jsonFile: JsonFile, result: CompletionResultSet) {
-        val topLevel = jsonFile.topLevelValue
-        if (topLevel is JsonObject) {
-            topLevel.propertyList.forEach { property ->
-                result.addElement(createLookupElement(property.name))
+    private fun extractKeys(
+        element: JsonElement,
+        result: CompletionResultSet,
+        suggestedKeys: MutableSet<String>,
+        deepScan: Boolean
+    ) {
+        if (element is JsonArray) {
+            element.valueList.forEach { extractKeys(it, result, suggestedKeys, deepScan) }
+        } else if (element is JsonObject) {
+            element.propertyList.forEach { prop ->
+                if (suggestedKeys.add(prop.name)) {
+                    result.addElement(
+                        LookupElementBuilder.create(prop.name)
+                            .withIcon(AllIcons.Nodes.Property)
+                            .withTypeText("Clé JSON")
+                    )
+                }
+                if (deepScan && prop.value != null) {
+                    extractKeys(prop.value!!, result, suggestedKeys, deepScan = true)
+                }
             }
         }
-    }
-    
-    private fun createLookupElement(name: String): LookupElementBuilder {
-        return LookupElementBuilder.create(name)
-            .withIcon(AllIcons.Nodes.Property)
-            .withTypeText("Clé JSON")
     }
 }
