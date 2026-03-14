@@ -17,7 +17,6 @@ import com.intellij.util.ProcessingContext
 import fr.ftnl.jsonpatheditor.internal.JsonPathLogic
 import fr.ftnl.jsonpatheditor.internal.isPremiumActive
 
-
 class JsonPathCompletionContributor : CompletionContributor() {
     
     init {
@@ -30,6 +29,10 @@ class JsonPathCompletionContributor : CompletionContributor() {
                     context: ProcessingContext,
                     result: CompletionResultSet
                 ) {
+                    
+                    if (parameters.editor.document.getUserData(JSON_PATH_SEARCH_FIELD_KEY) != true) {
+                        return
+                    }
                     
                     if (!isPremiumActive()) {
                         if (parameters.isAutoPopup) return

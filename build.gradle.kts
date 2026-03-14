@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fr.ftnl"
-version = "2026.1.1"
+version = "2026.2.1"
 
 repositories {
     mavenCentral()

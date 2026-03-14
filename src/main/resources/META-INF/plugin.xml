@@ -1,8 +1,8 @@
 <idea-plugin>
 
 	<product-descriptor code="PJSONPATH"
-						release-date="20260306"
-						release-version="20261"
+						release-date="20260314"
+						release-version="20262"
 						optional="true"/>
 
 	<id>fr.ftnl.JsonPathEditor</id>

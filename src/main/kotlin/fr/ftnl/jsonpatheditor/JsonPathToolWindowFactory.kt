@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.ScrollType
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -28,6 +29,8 @@ import javax.swing.JPanel
 import com.intellij.openapi.editor.event.DocumentListener as OpenApiDocumentListener
 import com.intellij.openapi.editor.event.DocumentEvent as OpenApiDocumentEvent
 
+val JSON_PATH_SEARCH_FIELD_KEY = Key.create<Boolean>("JSON_PATH_SEARCH_FIELD_KEY")
+
 class JsonPathToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val toolWindowPanel = JsonPathToolWindowPanel(project)
@@ -43,6 +46,8 @@ class JsonPathToolWindowPanel(private val project: Project) : JPanel(BorderLayou
     init {
         val jsonPathLang = Language.findLanguageByID("JSONPath") ?: Language.findLanguageByID("TEXT")
         searchField = LanguageTextField(jsonPathLang, project, "$.")
+        
+        searchField.document.putUserData(JSON_PATH_SEARCH_FIELD_KEY, true)
         
         searchField.document.addDocumentListener(object : OpenApiDocumentListener {
             override fun documentChanged(event: OpenApiDocumentEvent) = evaluateAndRender()
